@@ -19,11 +19,11 @@ jobs:
           echo "Generating SBOM for Apache Superset Docker image..."
           docker pull apache/superset:latest
 
-          # Install Syft (SBOM tool)
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh
+          # Install Syft (SBOM tool) globally
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sudo sh
 
           # Generate SBOM using Syft
-          ./syft docker:apache/superset:latest -o json > sbom.json
+          syft docker:apache/superset:latest -o json > sbom.json
 
       - name: Upload SBOM Artifact
         uses: actions/upload-artifact@v3
