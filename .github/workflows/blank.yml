@@ -1,6 +1,5 @@
-name: Fibonacci Sequence Calculation
+name: Generate SBOM for Superset Image
 
-# Trigger the action on a push to main or manually using workflow_dispatch
 on:
   push:
     branches:
@@ -8,32 +7,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  fibonacci-job:
+  sbom-job:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Calculate Fibonacci Sequence
+      - name: Generate SBOM for Superset Docker Image
         run: |
-          echo "Calculating the first 1000 terms of the Fibonacci sequence..."
-          python -c "
-          def fibonacci(n):
-              sequence = [0, 1]
-              while len(sequence) < n:
-                  sequence.append(sequence[-1] + sequence[-2])
-              return sequence
+          echo "Generating SBOM for Apache Superset Docker image..."
+          docker pull apache/superset:latest
 
-          output = fibonacci(1000)
-          with open('fibonacci_output.txt', 'w') as f:
-              for num in output:
-                  f.write(f'{num}\n')
-          "
-        shell: bash
+          # Install Syft (SBOM tool)
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh
 
-      - name: Upload Fibonacci Output
+          # Generate SBOM using Syft
+          ./syft docker:apache/superset:latest -o json > sbom.json
+
+      - name: Upload SBOM Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: fibonacci-output
-          path: fibonacci_output.txt
+          name: sbom-superset
+          path: sbom.json
