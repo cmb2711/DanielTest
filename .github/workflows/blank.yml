@@ -18,6 +18,18 @@ jobs:
       - name: Calculate Fibonacci Sequence
         run: |
           echo "Calculating the first 1000 terms of the Fibonacci sequence..."
+          python -c "
+          def fibonacci(n):
+              sequence = [0, 1]
+              while len(sequence) < n:
+                  sequence.append(sequence[-1] + sequence[-2])
+              return sequence
+
+          output = fibonacci(1000)
+          with open('fibonacci_output.txt', 'w') as f:
+              for num in output:
+                  f.write(f'{num}\n')
+          "
         shell: bash
 
       - name: Upload Fibonacci Output
