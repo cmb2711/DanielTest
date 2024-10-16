@@ -14,16 +14,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Generate SBOM for Superset Docker Image
+      - name: Pull Apache Superset Docker Image
         run: |
-          echo "Generating SBOM for Apache Superset Docker image..."
+          echo "Pulling Apache Superset Docker image..."
           docker pull apache/superset:latest
 
-          # Install Syft (SBOM tool) globally
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sudo sh
-
-          # Generate SBOM using Syft
-          syft docker:apache/superset:latest -o json > sbom.json
+      - name: Generate SBOM for Superset Docker Image using Syft
+        uses: anchore/syft-action@v0.4.0
+        with:
+          image: "apache/superset:latest"
+          output-format: "json"
+          output-file: "sbom.json"
 
       - name: Upload SBOM Artifact
         uses: actions/upload-artifact@v3
